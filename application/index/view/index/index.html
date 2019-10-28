@@ -1,0 +1,246 @@
+{include file="base/head"/}
+<style>
+.summary {
+	padding: 8px;
+	text-align: right;
+	background-color: white;
+}
+.price {
+	font-size: .9em;
+	margin-right: 6px;
+}
+</style>
+
+<script src="__WEUI__/js/iscroll-lite.js"></script>
+<div class="weui-cell">
+	<div class="weui-cell__bd" style="border-bottom: 1px solid #E5E5E5;">
+		<input class="weui-input" id="goodsname"  placeholder="请输入商品名称搜索(搜索名称时忽略分类)" style="display: inline-block;margin-left:10%;width: 80%;height: 1.5rem" >
+		<div style="display: inline-block;float: right;font-size: 1.5rem;width: 1.5rem ;color: green; line-height: 1.47rem; text-align: center;">
+			<span id="sub" class="icon icon-4" style="margin: auto;" ></span>
+		</div>
+	</div>
+</div>
+<div id="tagnav" class="weui-navigator weui-navigator-wrapper">
+	<ul class="weui-navigator-list">
+		{volist name='cate' id='c' }
+		<li  data-id='{$c.id}' ><a href="javascript:;">{$c.name}</a></li>
+		{/volist}
+	</ul>
+</div>
+
+<script type="text/html" id="left_cate">
+<li data-id="0"  class="f-green">全部</li>
+	{{#  layui.each(d, function(index, item){ }}
+
+	<li data-id="{{item.id}}" >{{item.name}}</li>
+	{{#  }); }}
+	{{#  if(d.length === 0){ }}
+
+	{{#  } }} 
+</script>
+
+<style type="text/css">
+#left li{
+	border-bottom: 1px solid #E5E5E5;
+	font-size: .6rem;
+	line-height: 2rem;
+	margin-left: .3rem;
+	overflow: hidden;
+	white-space:nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<div class="page page-bd">
+	<div class="weui-panel weui-panel_access" style="min-height: 500px;" >
+		<div id="left" style="width: 22%;float: left;">
+			<li data-id="0" class="f-green" id="all">全部</li>
+			{volist name='cate1' id='c' }
+			<li  data-id='{$c.id}' >{$c.name}</li>
+			{/volist}
+		</div>
+		<div style="width: 75%;float: right;border-left: 1px solid #E5E5E5;min-height:  500px;">
+			<div class="weui-panel__bd" id="goods" >
+			</div>
+		</div>
+	</div>
+</div>
+<div class="weui-popup__container popup-bottom " id="cart" >
+	<div class="weui-popup__overlay"></div>
+	<div class="weui-popup__modal">
+		<div class="toolbar">
+			<div class="toolbar-inner">
+				<a href="javascript:;" class="picker-button close-popup">关闭</a>
+				<h1 class="title">加入购物车</h1>
+			</div>
+		</div>
+		<div class="modal-content">
+			<div class="weui-cells">
+				<div class="weui-cell weui-cell_swiped">
+					<div class="weui-cell__bd">
+						<div class="weui-cell">
+							<div class="weui-cell__hd"><img src="" alt="" style="width:20px;margin-right:5px;display:block"></div>
+							<div class="weui-cell__bd">
+								<p id="g_name"></p>
+							</div>
+							<div class="weui-cell__ft">
+								<span class="price" id="g_price">￥00.00</span>
+								<div class="weui-count">
+									<a class="weui-count__btn weui-count__decrease"></a>
+									<input class="weui-count__number" type="number" id="g_number"  value="1">
+									<input  id="g_id" value="" hidden="hidden">
+									<input  id="g_p" value="" hidden="hidden">
+									<a class="weui-count__btn weui-count__increase"></a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="weui-cell__ft">
+						<a class="weui-swiped-btn weui-swiped-btn_warn delete-swipeout" href="javascript:">删除</a>
+						<a class="weui-swiped-btn weui-swiped-btn_default close-swipeout" href="javascript:">关闭</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p class="summary">
+			
+		</p>
+		<a href="javascript:;" class="weui-btn weui-btn_primary" id="goods_sub" data-target="#cart">加入购物车</a>
+	</div>
+</div>
+
+<script type="text/html" id="list">
+	{{#  layui.each(d, function(index, item){ }}
+	<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg " data-msg='{{JSON.stringify(item)}}'  data-target="#cart">
+		<div class="weui-media-box__hd">
+			<img class="weui-media-box__thumb" src="/upload/{{item.goods_img}}">
+		</div>
+		<div class="weui-media-box__bd">
+			<h4 class="weui-media-box__title">{{item.goodsname}}</h4>
+			<p class="weui-media-box__desc">{{item.price}}¥/{{item.unit_id}}</p>
+		</div>
+       <div class="weui-media-box__bd">
+       {{ item.sale }}
+       	</div>
+	</a>
+	{{#  }); }}
+	{{#  if(d.length === 0){ }}
+	
+	{{#  } }} 
+</script>
+<script>
+	var loading = false;  //状态标记
+	var page=1;
+	var limit=8;
+	var page_all=10;
+	$(function(){
+		TagNav('#tagnav',{
+			type: 'scrollToNext',
+			curClassName: 'weui-state-active',
+			index:0
+		});
+		$(document).on("click","#tagnav ul li",function(){
+			var id=$(this).data('id');
+			get_left(id);
+		})
+		$(document).on("click","#left li",function(){
+			var id=$(this).data('id');
+			$('#left li').removeClass('f-green');
+			$(this).addClass("f-green");
+			page=1;
+			$('#goods').html("");
+			$('#goodsname').val("");
+			get_list();
+		})
+		$(document).on("click","#sub",function(){
+			page=1;
+			$('#goods').html("");
+			get_list();
+		})
+		function  get_left(id){
+			ajaxYhc('POST','{:url("get_cate")}',{id:id},function(result){
+				layui.use('laytpl', function(){
+					var laytpl = layui.laytpl;
+					var getTpl = left_cate.innerHTML
+					,view = document.getElementById('left');
+					laytpl(getTpl).render(result.data, function(html){
+						view.innerHTML =html;
+					});
+                  	$('#left li').eq(0).click();
+                  
+				}); 
+			});
+		}
+
+		$(document.body).infinite(50);
+		$(document.body).infinite().on("infinite", function() {
+			if(loading) return;
+			if(page>page_all){
+				console.log("end"+page+'--'+page_all);
+				return false;
+			}
+			get_list();
+		});
+		get_list();
+		function get_list(){
+			loading=true;
+			ajaxYhc('POST','{:url("index")}',{page:page,limit:limit,cate1:$('.weui-state-active').data('id'),cate2:$('.f-green').data('id'),name:$('#goodsname').val()},function(result){
+				page_all=Math.ceil(parseInt(result.count)/limit);
+				layui.use('laytpl', function(){
+					var laytpl = layui.laytpl;
+					var getTpl = list.innerHTML
+					,view = document.getElementById('goods');
+					laytpl(getTpl).render(result.data, function(html){
+						view.innerHTML =view.innerHTML+ html;
+					});
+					page=page+1;
+					loading = false; 
+				}); 
+			});
+		}
+		var MAX = 9999, MIN = 1;
+		$('.weui-count__decrease').click(function (e) {
+			var $input = $(e.currentTarget).parent().find('.weui-count__number');
+			var number = parseInt($input.val() || "0") - 1
+			if (number < MIN) number = MIN;
+			$input.val(number);
+			var money=parseFloat($("#g_p").val())*number;
+			var str=number+'  件商品, 共计 <strong>'+money.toFixed(2)+'</strong> 元';
+			$('.summary').html(str);
+		})
+		$('.weui-count__increase').click(function (e) {
+			var $input = $(e.currentTarget).parent().find('.weui-count__number');
+			var number = parseInt($input.val() || "0") + 1
+			if (number > MAX) number = MAX;
+			$input.val(number);
+			var money=parseFloat($("#g_p").val())*number;
+			var str=number+'  件商品, 共计 <strong>'+money.toFixed(2)+'</strong> 元';
+			$('.summary').html(str);
+		})
+		$(document).on("click",".weui-media-box",function(){
+			var msg=$(this).data('msg');
+			$('#g_id').val(msg.id);
+			$('#g_p').val(msg.price);
+			$('#g_name').html(msg.goodsname);
+			$('#g_price').html("¥"+msg.price+"/"+msg.unit_id);
+			$("#cart").addClass("weui-popup__container--visible");
+			number=1;
+			$('#g_number').val(number);
+			var money=parseFloat($("#g_p").val())*number;
+			var str=number+'  件商品, 共计 <strong>'+money.toFixed(2)+'</strong> 元';
+			$('.summary').html(str);
+
+
+			$("#cart").show();
+
+		})
+		$(document).on("click","#goods_sub",function(){
+			ajaxYhc('POST','{:url("add_cart")}',{id:$('#g_id').val(),num:$("#g_number").val()},function(result){
+				$('.weui-popup__overlay').click();
+				$.toast(result.msg,'text');
+			});
+		})
+	})
+</script>
+
+
+{include file="base/foot"/}

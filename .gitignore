@@ -1,0 +1,8 @@
+runtime/
+*.tar.gz
+*.zip
+*.log
+vendor/
+thinkphp/
+public/upload/
+public/excels/

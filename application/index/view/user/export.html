@@ -1,0 +1,136 @@
+{include file="base/head"/}
+<style type="text/css">
+body{
+	height: auto;
+}
+</style>
+
+<div class="toolbar weui-navbar">
+	<div class="toolbar-inner">
+		<h1 class="title">{$title}</h1>
+	</div>
+</div>
+<div class="page page-bd padding5" >
+	
+	<div class="weui-cells weui-cells_form">
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label for="date" class="weui-label">开始日期</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" id="date_start" type="text" readonly="">
+			</div>
+		</div>
+		<div class="weui-cell">
+			<div class="weui-cell__hd"><label for="date" class="weui-label">截止日期</label></div>
+			<div class="weui-cell__bd">
+				<input class="weui-input" id="date_end" type="text" readonly="">
+			</div>
+		</div>
+	</div>
+	<article class="weui-article f14" style="line-height: 1.5rem;">
+		<p style="text-indent: 2em">
+			注：
+		</p>
+		<p style="text-indent: 2em">
+          1、由于计算量及数据量比较大 仅支持最多导出时间间隔200天内订单，间隔超出200天不予导出,请尽量导出少量数据防止卡顿
+      </p>
+		<p style="text-indent: 2em">
+			2、微信浏览器不支持下载文件，请复制网址在手机/电脑浏览器中访问导出
+		</p>
+      	<p style="text-indent: 2em">
+			3、部分浏览器可能会更改文件名后缀，请下载时手动更改文件夹，防止文件打不开
+		</p>
+		<a href="javascript:;" class="weui-btn weui-btn_primary open-popup" id="get_in">订单导出</a>
+		<a href="javascript:;" class="weui-btn weui-btn_primary open-popup" id="get_goods">订单商品导出</a>
+	</article>
+
+</div>
+<script type="text/javascript">
+	$("#date_start,#date_end").datetimePicker({
+		title: '选择日期'
+	});
+	layui.config({
+		base: '__STA__layui_exts/'
+	}).extend({
+		excel: 'excel'
+	});
+	$(document).on("click", "#get_in", function () {
+		var cancel=$(this);
+		$.confirm("您确定要导出吗?", "确认导出?", function() {
+			var date_start=$('#date_start').val();
+			var date_end=$('#date_end').val();
+			if(date_start==""){
+				$.toast('请选择开始导出日期','text');
+			}
+			if(date_end==""){
+				$.toast('请选择结束导出日期','text');
+			}
+			layui.use(['jquery', 'excel', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var excel = layui.excel; 
+				ajaxYhc('POST',"{:url('export')}",{date_start:date_start,date_end:date_end},
+					function(res){
+						if(res.code==0){
+							var data = res.data;
+							data = excel.filterExportData(data, {
+								order_no: 'order_no',money:'money',status:'status',create_time: 'create_time'
+							});
+							data.unshift({  order_no: "订单号",money:'订单金额',status:'状态', create_time: '创建时间' });
+							var colConf = excel.makeColConfig({'A': 120,'B': 120,'C': 120,'D': 120,'E': 120,'F': 120,'G': 120,'I': 120,
+						}, 80);
+							excel.exportExcel({sheet1: data}, date_start+'-'+ date_end+'订单.xlsx', 'xlsx', {extend: {'!cols': colConf}});
+						}else{
+							layer.alert(res.msg);
+						}
+					},
+					function(result){
+						layer.msg(result.msg);
+					});
+			});
+		}, function() {
+			$(this).parents('.weui-cell').swipeout('close')
+		});
+	})
+</script>
+<script type="text/javascript">
+	$(document).on("click", "#get_goods", function () {
+		var cancel=$(this);
+		$.confirm("您确定要导出吗?", "确认导出?", function() {
+			var date_start=$('#date_start').val();
+			var date_end=$('#date_end').val();
+			if(date_start==""){
+				$.toast('请选择开始导出日期','text');
+			}
+			if(date_end==""){
+				$.toast('请选择结束导出日期','text');
+			}
+			layui.use(['jquery', 'excel', 'layer'], function() {
+				var $ = layui.jquery;
+				var layer = layui.layer;
+				var excel = layui.excel; 
+				ajaxYhc('POST',"{:url('exportgoods')}",{date_start:date_start,date_end:date_end},
+					function(res){
+						if(res.code==0){
+							var data = res.data;
+							data = excel.filterExportData(data, {
+								order_no: 'order_no',goodsname:'goodsname',cate1:'cate1',cate2:'cate2',price:'price',unit: 'unit',num: 'num',money:'money',create_time: 'create_time' 
+							});
+							data.unshift({  order_no: "订单号",goodsname:'商品名',cate1:'一级分类',cate2:'二级分类',goodsname:'商品名',price:'单价',unit: '单位',num: '数量',money:'订单金额', create_time: '创建时间' });
+							var colConf = excel.makeColConfig({'A': 120,'B': 120,'C': 120,'D': 120,'E': 120,'F': 120,'G': 120,'I': 120,
+						}, 80);
+							excel.exportExcel({sheet1: data}, date_start+'-'+ date_end+'订单商品.xlsx', 'xlsx', {extend: {'!cols': colConf}});
+						}else{
+							layer.alert(res.msg);
+						}
+					},
+					function(result){
+						layer.msg(result.msg);
+					});
+			});
+		}, function() {
+			$(this).parents('.weui-cell').swipeout('close')
+		});
+	})
+</script>
+
+{include file="base/foot"/}

@@ -1,0 +1,141 @@
+{include file="base/addhead"/}
+<div class="layui-form-item">
+    <label class="layui-form-label">标题</label>
+    <div class="layui-input-block">
+        <input type="input" name="title" class="layui-input" lay-verify="require" value="">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">封面图片</label>
+    <div class="layui-input-block">
+        <button type="button" class="layui-btn" id="uploadimgimg">
+            <i class="layui-icon">&#xe67c;</i>上传图片</button>
+        <div class="layui-upload-list">
+            <img class="layui-upload-img" id="imgimg"  style="max-width: 200px;">
+            <p></p>
+        </div>
+        <input type="hidden" name="img"  id="img">
+        <script>
+            layui.use('upload', function(){var upload = layui.upload;
+                var uploadInst = upload.render({
+                    elem: '#uploadimgimg'
+                    ,url: '{:url("base/upload")}'
+                    ,accept:'images'
+                    ,acceptMime:'image/*'
+                    ,exts:'jpg|png|gif|bmp|jpeg'
+                    ,before: function(obj){
+                        obj.preview(function(index, file, result){
+                            $('#imgimg').attr('src', result);
+                        });
+                    }
+                    ,done: function(res){
+                        if(res.code==0){
+                            $('#img').val(res.msg);
+                            layer.msg('上传图片成功');
+                        }else{
+                            layer.msg(res.msg);
+                        }
+                    },error: function(){
+                    }
+                });
+            });
+        </script>
+
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">分类</label>
+    <div class="layui-input-block">
+        <select name="cate_id" lay-verify="">
+            {:select_option("eyJ3aGVyZSI6ImlzX2RlbGV0ZT0wIiwidGFibGUiOiJjYXRlIiwib3JkZXIiOiJpZCBkZXNjIiwiZmllbGQxIjoiaWQiLCJmaWVsZDIiOiJuYW1lIn0=")}</select>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">关联摄影师</label>
+    <div class="layui-input-block">
+        <select name="camera_id" lay-verify="">
+            {:select_option("eyJ3aGVyZSI6ImlzX3Nob3c9MCIsInRhYmxlIjoiY2FtZXJhIiwib3JkZXIiOiJpZCBkZXNjIiwiZmllbGQxIjoiaWQiLCJmaWVsZDIiOiJuYW1lIn0=")}</select>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">内容</label>
+    <div class="layui-input-block">
+        <textarea name="desc" class="layui-textarea" lay-verify="require"></textarea>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">案例详情</label>
+    <div class="layui-input-block">
+        {:get_editor("content",'ue')}
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">排序</label>
+    <div class="layui-input-block">
+        <input type="input" name="sort" class="layui-input" lay-verify="number" value="">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">状态</label>
+    <div class="layui-input-block">
+        <select name="is_show" lay-verify="">
+            <option value="0">显示</option>
+            <option value="1">不显示</option>
+        </select>
+    </div>
+</div>
+<!--固定提交button -->
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" lay-submit="add" lay-filter="add">立即提交</button>
+        <a href="{:url('index')}">
+            <button type="button" class="layui-btn layui-btn-primary">返回</button>
+        </a>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            layedit = layui.layedit
+        //创建一个编辑器    
+        //自定义验证规则
+        form.verify({
+            title: function (value) {
+                if (value == "") {
+                    return '页面title不能为空';
+                }
+            },
+            url: function (value) {
+                if (value == "") {
+                    return 'url路径不能为空';
+                }
+            },
+
+            //!$verify!  验证部分  做好替换即可
+            //!$post! 提交部分  做好替换即可
+            //!$tablfiled! 列表部分 做好
+        });
+        //监听提交 固定提交部分  编辑修改用
+        form.on('submit(add)', function (data) {
+            ajaxYhc('POST', '{:url("add")}', data.field,
+                function (result) {
+                    console.log(result);
+                    if (result.code == 0) {
+                        layer.msg(result.msg);
+                        setTimeout('location.href="{:url(\'index\')}";', 1500);
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                    ;
+                },
+                function (result) {
+                    console.log(result);
+                    layer.msg(result.msg);
+                });
+            return false;
+        });
+    });
+</script>
+{include file="base/addfoot"/}

@@ -1,0 +1,166 @@
+{include file="base/head"/}
+<style>
+.summary {
+    padding: 8px;
+    text-align: right;
+    background-color: white;
+}
+.price {
+    font-size: .9em;
+    margin-right: 6px;
+}
+</style>
+
+<div class="weui-tab" id="t1" style="height:44px;">
+    <div class="weui-navbar">
+        <div class="weui-navbar__item" data-id=0>
+            全部
+        </div>
+        <div class="weui-navbar__item" data-id=1>
+            已下单
+        </div>
+        <div class="weui-navbar__item" data-id=2>
+            已发货
+        </div>
+        <div class="weui-navbar__item" data-id=3>
+            已确认
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.weui-navbar__item').eq({$status}).addClass('tab-green');
+    $('.weui-navbar__item').click(function (e) {
+        window.location.href='{:url("order")}?status='+$(this).data('id');
+        return false;
+    })
+</script>
+<div class="page page-bd">
+    <ul  id="orders">
+
+
+    </ul>
+</div>
+<style type="text/css">
+.weui-pay-c{
+    color: #07c160;
+}
+.right:after{
+    border: none;
+}
+</style>
+<script type="text/html" id="list">
+    {{#  layui.each(d, function(index, item){ }}
+    <div class="weui-pay-m">
+        <li class="weui-pay-order">
+            <dl class="weui-pay-line">
+                <dd class="weui-pay-name"></dd>
+                <dt class="weui-pay-label">订 单 号：</dt><dd class="weui-pay-e">{{item.order_no}}</dd>
+            </dl>
+            <dl class="weui-pay-line"><dt class="weui-pay-label">创建时间：</dt><dd class="weui-pay-e">{{item.create_time}}</dd></dl>
+            <dl class="weui-pay-line"><dt class="weui-pay-label">总金额：</dt><dd class="weui-pay-e">￥{{item.money}}</dd></dl>
+            {if $status==0}
+            <dl class="weui-pay-line"><dt class="weui-pay-label">订单状态：</dt><dd class="weui-pay-e">{{ get_status(item.status)}}</dd>
+            </dl>
+            {/if}
+            <div class="weui-pay-area">
+                <a href='{:url("orderdetail")}?id={{item.id}}&order_no={{item.order_no}}'  class="weui-pay-c">查看详情</a>
+                {if $status==1}
+                <a href='javascript:;' class="weui-pay-c cancel  right" data-url='{:url("ordercancel")}?id={{item.id}}&order_no={{item.order_no}}'>取消订单</a>
+                {/if}
+                {if $status==2}
+                <a href='javascript:;' class="weui-pay-c confirmorder  right" data-url='{:url("confirmorder")}?id={{item.id}}&order_no={{item.order_no}}'>确认收货</a>
+                {/if}
+                
+            </div>
+        </li>
+    </div>    {{#  }); }}
+    {{#  if(d.length === 0){ }}
+    <div class="weui-loadmore">
+        <span class="weui-loadmore-tips">没有数据了</span>
+    </div>
+    {{#  } }} 
+</script>
+<script type="text/javascript">
+    var loading = false;  //状态标记
+    var page=1;
+    var limit=5;
+    var page_all=10;
+    $(document.body).infinite(50);
+    $(document.body).infinite().on("infinite", function() {
+        if(loading) return;
+        if(page>page_all){
+            return false;
+        }
+        get_list();
+    });
+    get_list();
+    function get_list(){
+        loading=true;
+        ajaxYhc('POST','{:url("order")}?',{page:page,limit:limit,status:'{$status}'},function(result){
+            page_all=Math.ceil(parseInt(result.count)/limit);
+            layui.use('laytpl', function(){
+                var laytpl = layui.laytpl;
+                var getTpl = list.innerHTML
+                ,view = document.getElementById('orders');
+                laytpl(getTpl).render(result.data, function(html){
+                    view.innerHTML =view.innerHTML+ html;
+                });
+                page=page+1;
+                loading = false; 
+            }); 
+        });
+    }
+</script>
+
+<script type="text/javascript">
+
+    $(document).on("click", ".cancel", function () {
+      var cancel=$(this);
+      $.confirm("您确定要取消订单吗?", "确认取消订单?", function() {
+        cancel.parents('.weui-pay-order').hide();
+        ajaxYhc('POST',cancel.data('url'),{},function(result){
+            if(result.code==0){
+                $.alert(result.msg, function(){
+
+                });
+            }
+        });
+    }, function() {
+        $(this).parents('.weui-cell').swipeout('close')
+    });
+  })
+    $(document).on("click", ".confirmorder", function () {
+      var confirmorder=$(this);
+      $.confirm("确定收到订单货品?", "确认订单?", function() {
+          
+        ajaxYhc('POST',confirmorder.data('url'),{},function(result){
+            if(result.code==0){
+              confirmorder.parents('.weui-pay-order').hide();
+              $.alert(result.msg, function(){
+
+              });
+          }
+      });
+    }, function() {
+        $(this).parents('.weui-cell').swipeout('close')
+    });
+  })
+
+
+
+
+    function get_status(s){
+        switch(s) {
+            case 1:
+            return "已下单";
+            break;
+            case 2:
+            return "已发货";
+            break;
+            case 3:
+            return "已确认";
+            break;
+        } 
+    }
+</script>
+{include file="base/foot"/}

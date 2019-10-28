@@ -1,0 +1,55 @@
+{include file="base/head"/}
+<style>
+.summary {
+	padding: 8px;
+	text-align: right;
+	background-color: white;
+}
+.price {
+	font-size: .9em;
+	margin-right: 6px;
+}
+</style>
+<div class="toolbar weui-navbar">
+	<div class="toolbar-inner">
+		<h1 class="title">{$title}</h1>
+	</div>
+</div>
+<div class="page page-bd">
+	<div class="weui-panel weui-panel_access">
+		<div class="">
+
+			<div class="modal-content">
+
+				{volist name='goods' id='g'}
+				<div class="weui-cells">
+					<div class="weui-cell weui-cell_swiped">
+						<div class="weui-cell__bd">
+							<div class="weui-cell">
+								<div class="weui-cell__hd"></div>
+								<div class="weui-cell__bd">
+									<p>{$g.goodsname}</p>
+								</div>
+								<div class="weui-cell__ft">
+									<span class="price">价格：￥{$g.price}/{$g.unit}</span>
+									<span class="price">订购数量：{$g.num}</span>
+								</div>
+							</div>
+						</div>
+				
+					</div>
+				</div>
+				{/volist}
+
+			</div>
+			<p class="summary">
+				 共计 <strong>{$c_money}</strong> 元;
+			</p>
+		</div>
+	</div>
+
+</div>
+
+
+
+{include file="base/foot"/}

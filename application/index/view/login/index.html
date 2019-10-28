@@ -1,0 +1,65 @@
+{include file="base/head"/}
+
+<div class="toolbar weui-navbar">
+  <div class="toolbar-inner">
+    <h1 class="title">  {notempty name='title'}{$title}{/notempty}</h1>
+  </div>
+</div>
+<div class="page page-bd">
+
+  <div class="weui-cells_form" >
+
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">账户</label></div>
+      <div class="weui-cell__bd">
+        <input class="weui-input" id="user" placeholder="请输入登录账户" >
+      </div>
+    </div>
+    <div class="weui-cell">
+      <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+      <div class="weui-cell__bd">
+        <input class="weui-input"  id="pass" placeholder="请输入登录密码"  type="password">
+      </div>
+    </div>
+    <div class="weui-btn-area weui-cells">
+      <a class="weui-btn weui-btn_primary" lay-submit="edit" lay-filter="edit" href="javascript:" id="btn">提交信息</a>
+    </div>
+  </div>
+  <input type="text" name="microtime" id="microtime" value="{$microtime}" hidden="hidden">
+  <input type="text" name="token" id='token' value="{$token}" hidden="hidden">
+  <input type="text" name="rand_num" id="rand_num" value="{$rand_num}" hidden="hidden">
+</div>
+
+<script type="text/javascript">
+  $(function(){
+    $(document).on("click","#btn",function(){
+      var user = $("#user").val();
+      var pass=$("#pass").val();
+      if(user==""){
+       $("#user").focus();
+       $.toast("请填写账户",'text');
+       return false;
+     }
+     if(user==""){
+       $("#pass").focus();
+       $.toast("请填写密码",'text');
+       return false;
+     }
+     ajaxYhc('POST','{:url("index")}',{user:user,pass:pass,microtime:$('#microtime').val(),token:$('#token').val(),rand_num:$('#rand_num').val(),},
+      function(result){
+        $.alert(result.msg,"{$webconfig['title']}",function(){
+         window.location.href="{:url('index/index/index')}";
+       });
+      },
+      function(result){
+        console.log(result);
+        $.toast(result.msg,'text');
+      });
+     return false;
+   });
+  });
+
+
+</script>
+
+{include file="base/foot"/}

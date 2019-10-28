@@ -1,0 +1,33 @@
+{include file="base/head"/}
+<body>
+    <div class="x-body layui-anim layui-anim-up">
+        <blockquote class="layui-elem-quote">欢迎管理员：
+            <span class="x-red">{:session("user_info")['username']}</span>！当前时间:{:date('Y-m-d H:i')}
+        </blockquote>
+        
+       
+        <fieldset class="layui-elem-field">
+            <legend>系统信息</legend>
+            <div class="layui-field-box">
+                <table class="layui-table">
+                    <tbody>
+                        <tr>
+                            <th>操作系统</th>
+                            <td>{:php_uname('s')}</td>
+                        </tr>
+                        <tr>
+                            <th>PHP运行方式</th>
+                            <td>{:php_sapi_name()}</td>
+                        </tr>
+                        <tr>
+                            <th>PHP版本</th>
+                            <td>{:PHP_VERSION}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</body>
+{include file="base/foot"/}

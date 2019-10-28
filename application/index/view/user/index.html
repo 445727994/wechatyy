@@ -1,0 +1,74 @@
+{include file="base/head"/}
+<style type="text/css">
+.user{
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    background: url('/static/head-bg.png');
+    background-size:100%,100%;
+    position: relative;a
+}
+.userImg{
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    top: 25px;
+    left: 30px;
+}
+.userImg img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+}
+.ueseText {
+    margin-left: 150px;
+    margin-top: 40px;
+    color: #fff;
+}
+</style>
+
+<div class="toolbar weui-navbar">
+    <div class="toolbar-inner">
+        <h1 class="title">{$title}</h1>
+    </div>
+</div>
+<div class="page page-bd">
+    <div class="user">
+        <div class="userImg"></div>
+        <div class="ueseText">
+            <h3>{$user.username}</h3>
+                <p></p>
+            </div>
+        </div>
+        <div class=" weui-cells_form" style='min-height:300px;'>
+           <div class="weui-grids">
+            <a href="{:url('user/export')}" class="weui-grid js_grid">
+                <div class="weui-grid__icon">
+                    <img src="__WEUI__/images/icon_nav_article.png" alt="">
+                </div>
+                <p class="weui-grid__label">
+                    订单导出
+                </p>
+            </a>
+   <a href="{:url('user/out')}" class="weui-grid js_grid">
+                <div class="weui-grid__icon" >
+                  <span class="icon icon-112" style="font-size: 1.2rem;color: red"></span>
+                </div>
+                <p class="weui-grid__label">
+                    退出登录
+                </p>
+            </a>
+
+        </div>
+    </div>
+</div>
+     
+        <div class="weui-footer" style="margin-bottom: 2.7rem;margin-top: .8rem">
+               <p>联系电话：{$webconfig.phone}</p>
+          <p>联系qq：{$webconfig.qq}</p>
+  <p class="weui-footer__text">{$webconfig.title} Copyright © {$webconfig.copyright}<br>
+</p>
+</div>
+
+
+{include file="base/foot"/}

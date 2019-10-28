@@ -1,0 +1,6 @@
+runtime/
+*.tar.gz
+/config/database.php
+*.log
+vendor/
+thinkphp/

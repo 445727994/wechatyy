@@ -1,0 +1,145 @@
+
+
+<div class="weui-navbar">
+    <div class="weui-navbar__item tab-green">
+        个人信息
+    </div>
+</div>
+<div class="page page-bd">
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">院校名称</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="start" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">院校代码</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">院(系)部</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">班级</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">姓名</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">性别</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">身份证号码</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">学号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">学历层次</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" pattern="[0-9]*" placeholder="请输入qq号" type="number">
+            </div>
+        </div>
+        <div class="weui-cell" >
+            <div class="weui-feeds">
+               <ul>
+                   <li>
+                       <span style="background-image:url(./images/1.jpg);background-repeat:no-repeat;background-size:cover;height: 60px;"></span>
+                   </li>
+                   <li>
+                    <div class='center page-bd-15 f14 img-right'>
+                        <span>如图像无误请点击</span>
+                        <span ><a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_primary">绿色小按钮</a></span>
+                        <span> 如有拍照错误请选择</span>
+                        <span>
+                            <div class="weui-cell" style="padding: .5rem 0;">
+                                <input class="weui-input border" style="text-align: center;height: 1.8rem;border-radius: 1rem;" id="job" type="text" value=""  placeholder="选择错误类型">
+                            </div>
+                        </span>
+                        <span ><a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_warn">红色小按钮</a></span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+</div>
+<style type="text/css">
+.img-right{
+    line-height: 1.3rem;
+}
+.img-right span{
+    text-align: center;
+    display: block;
+}
+.img-right span a{
+    width: 100%;
+}
+.weui-picker-container{
+    bottom: 2.7rem;
+}
+</style>
+<script type="text/javascript">
+    $("#job").select({
+        title: "选择错误类型",
+        items: [ {
+            title: "图片不是本人",
+            value: "1",
+        }, {
+            title: "闭眼",
+            value: "2",
+        },],
+        onChange: function(d) {
+           console.log(this);
+           console.log(this, d);
+       },
+       onClose: function() {
+        console.log("close");
+    },
+    onOpen: function() {
+        console.log("open");
+    },
+});
+
+</script>
+
+
+
+<script>
+    $(function(){
+     $(document).on("click","#btn",function(){
+         var user = $("#user").val();
+         if(user==""){
+             $.toptip("用户名不能为空");
+             return false;
+         }else{
+             $.toptip("提交成功",'success');
+         }
+     })
+
+ });
+   
+
+</script>

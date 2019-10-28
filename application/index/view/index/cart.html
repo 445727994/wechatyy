@@ -1,0 +1,137 @@
+{include file="base/head"/}
+<style>
+.summary {
+	padding: 8px;
+	text-align: right;
+	background-color: white;
+}
+.price {
+	font-size: .9em;
+	margin-right: 6px;
+}
+</style>
+<div class="toolbar weui-navbar">
+	<div class="toolbar-inner">
+		<h1 class="title">{$title}<span class="f14">(左滑删除商品)</span></h1>
+	</div>
+</div>
+<div class="page page-bd">
+	<div class="weui-panel weui-panel_access">
+		<div class="">
+			<div class="modal-content">
+				{volist name='goods' id='g'}
+				<div class="weui-cells">
+					<div class="weui-cell weui-cell_swiped">
+						<div class="weui-cell__bd">
+							<div class="weui-cell">
+								<div class="weui-cell__hd"><img src="{$g.goods_img|get_img}" alt="" style="width:20px;height:20px;margin-right:5px;display:block"></div>
+								<div class="weui-cell__bd">
+									<p>{$g.goodsname}</p>
+								</div>
+								<div class="weui-cell__ft">
+									<span class="price">￥{$g.price}</span>
+									<div class="weui-count">
+										<a class="weui-count__btn weui-count__decrease" data-id={$g.id}></a>
+										<input class="weui-count__number g_num" type="number" value="{$g.num}">
+										<input class="g_price" type="text" value="{$g.price}" hidden="hidden">
+										<a class="weui-count__btn weui-count__increase" data-id={$g.id}></a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="weui-cell__ft">
+							<a class="weui-swiped-btn weui-swiped-btn_warn delete-swipeout" href="javascript:" data-id={$g.id} >删除</a>
+							<a class="weui-swiped-btn weui-swiped-btn_default close-swipeout" href="javascript:">关闭</a>
+						</div>
+					</div>
+				</div>
+				{/volist}
+
+			</div>
+			<p class="summary">
+				
+			</p>
+		</div>
+	</div>
+	<article class="weui-article">
+		<a href="javascript:;" class="weui-btn weui-btn_primary open-popup" id="get_in">商品购入</a>
+	</article>
+</div>
+<script>
+	calculate();
+	$('.weui-cell_swiped').swipeout('open');
+	$('.delete-swipeout').click(function () {
+		var cid=$(this);
+		$.confirm("您确定要删除吗?", "确认删除?", function() {
+			ajaxYhc('POST','{:url("del_cart")}',{id:cid.data('id')},function(result){
+				if(result.code==0){
+					$.toast(result.msg,'text');
+					cid.parents('.weui-cell').remove();
+				}
+			});
+			
+		}, function() {
+			$(this).parents('.weui-cell').swipeout('close')
+		});
+		
+	})
+	$('.close-swipeout').click(function () {
+		$(this).parents('.weui-cell').swipeout('close')
+	})
+	$('#get_in').click(function () {
+		$.confirm("您确定要购入吗?", "确认购入?", function() {
+			ajaxYhc('POST','{:url("get_cart")}',{},function(result){
+				if(result.code==0){
+					$.alert(result.msg, function(){
+						window.location.href='{:url("order")}?status=1';
+					});
+				}
+			});
+			
+		}, function() {
+			$(this).parents('.weui-cell').swipeout('close')
+		});
+	})
+
+
+
+	var MAX = 9999, MIN = 1;
+	$('.weui-count__decrease').click(function (e) {
+		var $input = $(e.currentTarget).parent().find('.weui-count__number');
+		var number = parseInt($input.val() || "0") - 1
+		if (number < MIN) number = MIN;
+		$input.val(number);
+		change_num($(this).data('id'),number);
+		calculate();
+	})
+	$('.weui-count__increase').click(function (e) {
+		var $input = $(e.currentTarget).parent().find('.weui-count__number');
+		var number = parseInt($input.val() || "0") + 1
+		if (number > MAX) number = MAX;
+		$input.val(number);
+		change_num($(this).data('id'),number);
+		calculate();
+	})
+	function change_num(id,num){
+		ajaxYhc('POST','{:url("change_cart")}',{id:id,num:num},function(result){
+			if(result.code==0){
+				
+			}
+		});
+	}
+	function calculate(){
+		var g=0;
+		var n=0;
+		$('.weui-count').each(function(){
+			g+=parseFloat($(this).children('.g_price').val())*parseInt($(this).children('.g_num').val());
+			n+=parseInt($(this).children('.g_num').val());
+		})
+		var str='共'+n+'  件商品, 共计 <strong>'+g+'</strong> 元';
+		$('.summary').html(str);
+	}
+
+</script>
+
+
+
+{include file="base/foot"/}
